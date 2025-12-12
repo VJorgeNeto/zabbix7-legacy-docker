@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  zabbix-agent:
+    image: zabbix-agent-custom:7.4.5
+    container_name: zabbix-agent
+    restart: unless-stopped
+
+    # --- MODO DE REDE: HOST (Crucial) ---
+    # Permite que o agente veja as interfaces de rede reais do servidor
+    network_mode: host
+
+    # --- PERMISSÕES ---
+    # Necessário para ler métricas de sistema do Kernel antigo
+    privileged: true
+    user: root  # Geralmente necessário para ler tudo do /proc/ host
+
+    volumes:
+      # 1. Configuração e PSK
+      - /etc/zabbix/zabbix_agentd.conf:/etc/zabbix/zabbix_agentd.conf:ro
+      # - /etc/zabbix/zabbix_agentd.psk:/etc/zabbix/zabbix_agentd.psk:ro
+
+      # 2. Monitoramento do HOST (Mágica do Docker)
+      # Mapeamos o sistema de arquivos do host para dentro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host/rootfs:ro
+      - /dev:/host/dev:ro
+
+    # Variáveis opcionais para ajudar na coleta
+    environment:
+      - ZBX_HOSTNAME=centos
+      - TZ=America/Sao_Paulo
+
+    # Correção para CentOS 7
+    security_opt:
+      - seccomp:unconfined

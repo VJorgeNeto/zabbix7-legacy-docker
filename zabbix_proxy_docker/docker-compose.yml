@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  zabbix-proxy:
+    image: zabbix-proxy-custom:7.4.5
+    container_name: zabbix-proxy
+    restart: unless-stopped
+    user: zabbix
+    ports:
+      - "10051:10051"
+
+    volumes:
+      # 1. CONFIGURAÇÃO
+      # Arquivo real no host e joga no local padrão do container
+      - /etc/zabbix/zabbix_proxy.conf:/etc/zabbix/zabbix_proxy.conf:ro
+
+      # 2. PSK (Chave de criptografia)
+      # Pega o arquivo real no host e joga EXATAMENTE onde seu conf diz que ele está
+      - /etc/zabbix/zabbix_proxy.psk:/etc/zabbix/zabbix_proxy.psk:ro
+
+      # 3. BANCO DE DADOS (Persistência)
+      # No conf: DBName=/tmp/zabbix_proxy.db
+      # Foi mapeado a pasta /tmp/zabbix do HOST para a pasta /tmp do CONTAINER.
+      # Assim o arquivo zabbix_proxy.db será salvo no host em /tmp/zabbix/zabbix_proxy.db
+      - /tmp/zabbix:/tmp
+
+      # 4. SCRIPTS EXTERNOS
+      - /usr/lib/zabbix/externalscripts:/usr/lib/zabbix/externalscripts
+
+    # Permite rodar no Kernel antigo do CentOS 7
+    security_opt:
+      - seccomp:unconfined
+
+    network_mode: bridge
+
+    environment:
+      - TZ=America/Sao_Paulo
