@@ -42,7 +42,7 @@ RUN ./configure \
 # ==============================================================================
 FROM almalinux:8-minimal
 
-LABEL maintainer="Hitfy - SRE Team"
+LABEL maintainer="Jorge Neto"
 
 # Usuário Zabbix
 RUN microdnf install -y shadow-utils && \
@@ -76,5 +76,6 @@ EXPOSE 10050
 VOLUME ["/etc/zabbix/zabbix_agentd.d"]
 
 USER zabbix
+
 
 CMD ["/usr/sbin/zabbix_agentd", "-c", "/etc/zabbix/zabbix_agentd.conf", "-f"]
