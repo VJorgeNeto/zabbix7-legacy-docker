@@ -45,7 +45,7 @@ RUN ./configure \
 # ==============================================================================
 FROM almalinux:8-minimal
 
-LABEL maintainer="Hitfy - SRE Team"
+LABEL maintainer="Jorge Neto"
 
 # Criar usuário Zabbix
 RUN microdnf install -y shadow-utils && \
@@ -82,5 +82,6 @@ EXPOSE 10051
 VOLUME ["/var/lib/zabbix", "/usr/lib/zabbix/externalscripts"]
 
 USER zabbix
+
 
 CMD ["/usr/sbin/zabbix_proxy", "-c", "/etc/zabbix/zabbix_proxy.conf", "-f"]
